@@ -94,43 +94,43 @@ const DecorativeCircle2 = styled.div`
 `;
 
 const Home = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    return (
-        <HomeContainer
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, x: -100 }}
-            transition={{ duration: 0.5 }}
+  return (
+    <HomeContainer
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, x: -100 }}
+      transition={{ duration: 0.5 }}
+    >
+      <TitleWrapper>
+        <Subtitle>화랑미술전 특별 기획</Subtitle>
+        <MainTitle>
+          1분만에 확인하는<br />
+          <span>카페사장 DNA</span> 테스트
+        </MainTitle>
+      </TitleWrapper>
+
+      <ImagePlaceholder>
+        ☕️
+      </ImagePlaceholder>
+
+      <ButtonContainer>
+        <button
+          className="btn btn-primary"
+          onClick={() => navigate('/test/1')}
         >
-            <TitleWrapper>
-                <Subtitle>화랑미술전 특별 기획</Subtitle>
-                <MainTitle>
-                    1분만에 확인하는<br />
-                    <span>카페사장 DNA</span> 테스트
-                </MainTitle>
-            </TitleWrapper>
+          테스트 시작하기
+        </button>
+        <BottomText>
+          나의 숨겨진 <span>카페사장</span> DNA를 확인해보세요!
+        </BottomText>
+      </ButtonContainer>
 
-            <ImagePlaceholder>
-                ☕️
-            </ImagePlaceholder>
-
-            <ButtonContainer>
-                <button
-                    className="btn btn-primary"
-                    onClick={() => navigate('/test/1')}
-                >
-                    테스트 시작하기
-                </button>
-                <BottomText>
-                    나의 숨겨진 장사꾼 포텐셜을 확인해보세요!
-                </BottomText>
-            </ButtonContainer>
-
-            <DecorativeCircle1 />
-            <DecorativeCircle2 />
-        </HomeContainer>
-    );
+      <DecorativeCircle1 />
+      <DecorativeCircle2 />
+    </HomeContainer>
+  );
 };
 
 export default Home;

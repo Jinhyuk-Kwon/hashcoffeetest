@@ -73,6 +73,7 @@ const QuestionText = styled.h3`
   margin-bottom: 60px;
   color: var(--text-main);
   word-break: keep-all;
+  white-space: pre-wrap;
 `;
 
 const OptionContainer = styled.div`
@@ -95,6 +96,7 @@ const OptionButton = styled.button`
   cursor: pointer;
   text-align: center;
   word-break: keep-all;
+  white-space: pre-wrap;
   transition: all 0.2s ease;
   box-shadow: 0 4px 6px rgba(0,0,0,0.02);
 
@@ -108,88 +110,88 @@ const OptionButton = styled.button`
 
 // 앱 전체의 상태(점수)를 관리하기 위해 간단한 지역 변수 사용 (실제론 Redux/Context가 좋으나 간단한 테스터기이므로 세션스토리지 활용)
 const Test = () => {
-    const navigate = useNavigate();
-    const { id } = useParams();
-    const qNum = parseInt(id) || 1;
-    const currentQuestion = questions[qNum - 1];
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const qNum = parseInt(id) || 1;
+  const currentQuestion = questions[qNum - 1];
 
-    const handleBack = () => {
-        if (qNum > 1) {
-            navigate(`/test/${qNum - 1}`);
-        } else {
-            navigate('/');
-        }
-    };
+  const handleBack = () => {
+    if (qNum > 1) {
+      navigate(`/test/${qNum - 1}`);
+    } else {
+      navigate('/');
+    }
+  };
 
-    const handleOptionClick = (scoreObj) => {
-        // 세션 스토리지에 점수 누적
-        const savedScores = JSON.parse(sessionStorage.getItem('mbtiScores')) || {};
+  const handleOptionClick = (scoreObj) => {
+    // 세션 스토리지에 점수 누적
+    const savedScores = JSON.parse(sessionStorage.getItem('mbtiScores')) || {};
 
-        // 점수 업데이트 로직
-        const newScores = { ...savedScores };
-        Object.keys(scoreObj).forEach(key => {
-            newScores[key] = (newScores[key] || 0) + scoreObj[key];
-        });
+    // 점수 업데이트 로직
+    const newScores = { ...savedScores };
+    Object.keys(scoreObj).forEach(key => {
+      newScores[key] = (newScores[key] || 0) + scoreObj[key];
+    });
 
-        sessionStorage.setItem('mbtiScores', JSON.stringify(newScores));
+    sessionStorage.setItem('mbtiScores', JSON.stringify(newScores));
 
-        // 다음 페이지 이동 혹은 결과 로딩 페이지로 이동
-        if (qNum < questions.length) {
-            navigate(`/test/${qNum + 1}`);
-        } else {
-            navigate('/loading');
-        }
-    };
+    // 다음 페이지 이동 혹은 결과 로딩 페이지로 이동
+    if (qNum < questions.length) {
+      navigate(`/test/${qNum + 1}`);
+    } else {
+      navigate('/loading');
+    }
+  };
 
-    // 프로그레스 바 비율 계산
-    const progressPercent = (qNum / questions.length) * 100;
+  // 프로그레스 바 비율 계산
+  const progressPercent = (qNum / questions.length) * 100;
 
-    if (!currentQuestion) return <div>잘못된 접근입니다.</div>;
+  if (!currentQuestion) return <div>잘못된 접근입니다.</div>;
 
-    return (
-        <TestContainer
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+  return (
+    <TestContainer
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <Header>
+        <BackButton onClick={handleBack}>←</BackButton>
+        <ProgressInfo>{qNum} / {questions.length}</ProgressInfo>
+      </Header>
+
+      <ProgressBarContainer>
+        <ProgressBar
+          initial={{ width: `${((qNum - 1) / questions.length) * 100}%` }}
+          animate={{ width: `${progressPercent}%` }}
+          transition={{ duration: 0.3 }}
+        />
+      </ProgressBarContainer>
+
+      <AnimatePresence mode="wait">
+        <QuestionSection
+          key={qNum}
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -50 }}
+          transition={{ duration: 0.3 }}
         >
-            <Header>
-                <BackButton onClick={handleBack}>←</BackButton>
-                <ProgressInfo>{qNum} / {questions.length}</ProgressInfo>
-            </Header>
+          <QuestionNumber>Q{qNum}.</QuestionNumber>
+          <QuestionText>{currentQuestion.question}</QuestionText>
 
-            <ProgressBarContainer>
-                <ProgressBar
-                    initial={{ width: `${((qNum - 1) / questions.length) * 100}%` }}
-                    animate={{ width: `${progressPercent}%` }}
-                    transition={{ duration: 0.3 }}
-                />
-            </ProgressBarContainer>
-
-            <AnimatePresence mode="wait">
-                <QuestionSection
-                    key={qNum}
-                    initial={{ opacity: 0, x: 50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -50 }}
-                    transition={{ duration: 0.3 }}
-                >
-                    <QuestionNumber>Q{qNum}.</QuestionNumber>
-                    <QuestionText>{currentQuestion.question}</QuestionText>
-
-                    <OptionContainer>
-                        {currentQuestion.options.map((option, index) => (
-                            <OptionButton
-                                key={index}
-                                onClick={() => handleOptionClick(option.score)}
-                            >
-                                {option.text}
-                            </OptionButton>
-                        ))}
-                    </OptionContainer>
-                </QuestionSection>
-            </AnimatePresence>
-        </TestContainer>
-    );
+          <OptionContainer>
+            {currentQuestion.options.map((option, index) => (
+              <OptionButton
+                key={index}
+                onClick={() => handleOptionClick(option.score)}
+              >
+                {option.text}
+              </OptionButton>
+            ))}
+          </OptionContainer>
+        </QuestionSection>
+      </AnimatePresence>
+    </TestContainer>
+  );
 };
 
 export default Test;
